@@ -1,12 +1,24 @@
 
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogOut, User } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuLabel, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -19,6 +31,10 @@ const Navbar = () => {
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
   };
 
   return (
@@ -40,9 +56,34 @@ const Navbar = () => {
           </Link>
           
           <nav className="hidden md:flex items-center space-x-8">
-            <NavLink to="/">Home</NavLink>
-            <NavLink to="/digest">My Digest</NavLink>
-            <NavLink to="/preferences">Preferences</NavLink>
+            {user ? (
+              <>
+                <NavLink to="/">Home</NavLink>
+                <NavLink to="/digest">My Digest</NavLink>
+                <NavLink to="/preferences">Preferences</NavLink>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="sm" className="relative h-8 w-8 rounded-full">
+                      <span className="flex h-full w-full items-center justify-center bg-primary/10 text-primary rounded-full">
+                        {user.email?.[0]?.toUpperCase() || <User size={14} />}
+                      </span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuLabel>{user.email}</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleSignOut}>
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Log out</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
+            ) : (
+              <Link to="/auth/login">
+                <Button variant="default" size="sm">Sign in</Button>
+              </Link>
+            )}
           </nav>
           
           <button 
@@ -63,9 +104,34 @@ const Navbar = () => {
         )}
       >
         <nav className="flex flex-col space-y-6 items-center text-lg">
-          <MobileNavLink to="/" onClick={() => setMobileMenuOpen(false)}>Home</MobileNavLink>
-          <MobileNavLink to="/digest" onClick={() => setMobileMenuOpen(false)}>My Digest</MobileNavLink>
-          <MobileNavLink to="/preferences" onClick={() => setMobileMenuOpen(false)}>Preferences</MobileNavLink>
+          {user ? (
+            <>
+              <MobileNavLink to="/" onClick={() => setMobileMenuOpen(false)}>Home</MobileNavLink>
+              <MobileNavLink to="/digest" onClick={() => setMobileMenuOpen(false)}>My Digest</MobileNavLink>
+              <MobileNavLink to="/preferences" onClick={() => setMobileMenuOpen(false)}>Preferences</MobileNavLink>
+              <button 
+                className="text-foreground/90 hover:text-foreground py-2 px-4 w-full text-center transition-all duration-200 flex items-center justify-center"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  handleSignOut();
+                }}
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Log out</span>
+              </button>
+              <div className="text-sm text-center text-muted-foreground">
+                Signed in as<br/>{user.email}
+              </div>
+            </>
+          ) : (
+            <Link 
+              to="/auth/login"
+              className="w-full" 
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <Button variant="default" className="w-full">Sign in</Button>
+            </Link>
+          )}
         </nav>
       </div>
     </header>
