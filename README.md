@@ -1,18 +1,12 @@
-# Welcome to your Lovable project
+# Welcome to my NewsFeed project
 
 ## Project info
 
-**URL**: https://lovable.dev/projects/0dc06f17-027d-497f-b9c0-4dc7fdb56d2c
+**URL**: https://newsfeed-nair.netlify.app/
 
 ## How can I edit this code?
 
 There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/0dc06f17-027d-497f-b9c0-4dc7fdb56d2c) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
 
 **Use your preferred IDE**
 
